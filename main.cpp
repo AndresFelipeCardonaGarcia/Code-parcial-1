@@ -3,7 +3,7 @@
 
 using namespace std;
 void verificar_hora_valida(int& hora) {
-    while (hora < 0 || hora > 23){
+    while ((hora < 0) || (hora > 23)){
         cout << "Error. Ingrese una hora (entre 0 y 23): ";
         cin >> hora;
     }
@@ -99,16 +99,99 @@ void elegir_matriz(int hora_inicio,int hora_fin,char dia,int L[],int M[],int W[]
     }
 
 }
+int* dia_mas_disponible(int L[],int M[],int W[],int J[],int V[],int S[],int D[]){
+   int contador_L = 0;
+   int contador_M = 0;
+   int contador_W = 0;
+   int contador_J = 0;
+   int contador_V = 0;
+   int contador_S = 0;
+   int contador_D = 0;
+   for (int i = 0; i < 24; i++) {
+           if (L[i] == 0) contador_L++;
+           if (M[i] == 0) contador_M++;
+           if (W[i] == 0) contador_W++;
+           if (J[i] == 0) contador_J++;
+           if (V[i] == 0) contador_V++;
+           if (S[i] == 0) contador_S++;
+           if (D[i] == 0) contador_D++;
+       }
+   // if (cant_ceros_Cuarquier dia == max_cant_ceros) usaremos ramdom para crear aleatoreidad
+       int max_cant_ceros = 0;
+       int lista_max_ceros;
+       if (contador_L > max_cant_ceros) {
+           max_cant_ceros = contador_L;
+           lista_max_ceros = 0;
+       }
+       if (contador_M > max_cant_ceros) {
+           max_cant_ceros = contador_M;
+           lista_max_ceros = 1;
+       }
+       if (contador_W > max_cant_ceros) {
+           max_cant_ceros = contador_W;
+           lista_max_ceros = 2;
+       }
+       if (contador_J > max_cant_ceros) {
+           max_cant_ceros = contador_J;
+           lista_max_ceros = 3;
+       }
+       if (contador_V > max_cant_ceros) {
+           max_cant_ceros = contador_V;
+           lista_max_ceros = 4;
+       }
+       if (contador_S > max_cant_ceros) {
+           max_cant_ceros = contador_S;
+           lista_max_ceros = 5;
+       }
+       if (contador_D > max_cant_ceros) {
+           max_cant_ceros = contador_D;
+           lista_max_ceros = 6;
+       }
+
+        if (lista_max_ceros = 0){
+            return L;
+        }
+        if (lista_max_ceros = 1){
+            return M;
+        }
+        if (lista_max_ceros = 2){
+            return W;
+        }
+        if (lista_max_ceros = 3){
+            return J;
+        }
+        if (lista_max_ceros = 4){
+            return V;
+        }
+        if (lista_max_ceros = 5){
+            return S;
+        }
+        if (lista_max_ceros = 6){
+            return D;
+        }
+
+}
+void distrubucion_aleatoria(int creditos,int L[],int M[],int W[],int J[],int V[],int S[],int D[]){
+    int* dia_disponible;
+    for (int i = 0; i < creditos; ++i) {
+        for (int j = 0; j < 24; ++j) {
+            dia_disponible = dia_mas_disponible(L,M,W,J,V,S,D);
+           if (dia_disponible[j] == 0){
+               dia_disponible[j] = 4;
+           }
+        }
+    }
+}
 int main()
 {
-    int dias_clase;
     int codigo_materia;
     char dia;
     int num;
+    int creditos;
     char true_false;
     int hora_inicio;
     int hora_fin;
-    int L[24] = {0};
+    int L[24]={0};
     int M[24]={0};
     int W[24]={0};
     int J[24]={0};
@@ -174,35 +257,40 @@ break;
             }
         }
     }
+
     while (true){
         num = 3;
         cout<<"Escriba el codigo de la materia"<<endl;cin>>codigo_materia;
+        ifstream pensum("pensum.txt"); // abre el archivo en modo lectura
+        int numero;
+        if (pensum.is_open()) { // verifica si el archivo se abrió correctamente
+           while (pensum >> numero) { // lee un número a la vez desde el archivo
+               int creditos;
+               if (numero == codigo_materia){
+                   for (int i = 0; i < 3; ++i) {
+                      pensum>>numero;
+                   }
+                   creditos = numero;
+                   break;
+               }
+           }
+           pensum.close(); // cierra el archivo
+        }
+        else {
+           cout << "No se pudo abrir el archivo" << endl;
+        }
         while(true){
             cout<<"Elija dia que tiene su clase Donde; \n L es lunes, M es martes m es miercoles J es jueves \n V es viernes, S es sabado y D es domingo"<<endl;cin>>dia;
             cout<<"Elija la hora en que inicia la clase"<<endl;cin>>hora_inicio;
             cout<<"Elija la hora en que termina su clase"<<endl;cin>>hora_fin;
             elegir_matriz(hora_inicio, hora_fin,dia,L,M,W,J,V,S,D,num);
-            cout<<"Si ya no tiene mas clases de esta materia esta semana presione presione n, si aun tiene presione cualquier tecla"<<endl;cin>>true_false;
+            cout<<"Si ya no tiene mas clases de esta materia esta semana presione presione n, si aun tiene presione cualquier letra"<<endl;cin>>true_false;
             if (true_false == 'n' || true_false == 'N'){
+            distrubucion_aleatoria(creditos,L,M,W,J,V,S,D);
                 break;
         }
     }
-        cout<<"Si ya no tiene mas materias esta semana presione presione n, si aun tiene presione cualquier letra"<<endl;cin>>true_false;
-    }
-
-
-
-    ifstream pensum("pensum.txt"); // abre el archivo en modo lectura
-    int numero;
-    if (pensum.is_open()) { // verifica si el archivo se abrió correctamente
-       while (pensum >> numero) { // lee un número a la vez desde el archivo
-          cout << numero << endl; // muestra el número en la consola
-
-       }
-       pensum.close(); // cierra el archivo
-    }
-    else {
-       cout << "No se pudo abrir el archivo" << endl;
+        cout<<"Si ya no tiene mas materias presione presione n, si aun tiene presione cualquier letra"<<endl;cin>>true_false;
     }
     return 0;
 }
